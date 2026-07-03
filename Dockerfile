@@ -6,16 +6,15 @@ ENV PYTHONUNBUFFERED=1
 ENV FLAGS_use_mkldnn=0
 ENV PIP_NO_CACHE_DIR=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1 \
-    libglib2.0-0 \
-    libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt .
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+
+# PaddleOCR opencv-python kuruyor, bu libGL ister.
+# Onları kaldırıp sadece headless OpenCV bırakıyoruz.
+RUN pip uninstall -y opencv-python opencv-contrib-python opencv-python-headless
+RUN pip install opencv-python-headless==4.6.0.66
 
 COPY . .
 
